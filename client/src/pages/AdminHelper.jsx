@@ -208,7 +208,12 @@ const ProductsManager = () => {
 
     return (
         <div className="admin-section">
-            <h2>Products Manager</h2>
+            <div className="section-header">
+                <h2>Products Manager</h2>
+                <button onClick={handleCancel} className="save-btn" style={{ background: '#4CAF50', color: 'white' }}>
+                    + Add New Product
+                </button>
+            </div>
 
             <div className="admin-grid">
                 <div className="add-product-form">

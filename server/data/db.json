@@ -1,9 +1,9 @@
 {
   "content": {
     "hero": {
-      "title": "TIMELESS ELEGAhiNCEsdf",
-      "subtitle": "Exquisite Jewelry Since 2018123",
-      "videoUrl": ""
+      "title": "TIMELESS ELEGANCE",
+      "subtitle": "Exquisite Jewelry Since 2018",
+      "videoUrl": "http://localhost:5000/uploads/file-1769024412211-512379592.mp4"
     },
     "about": {
       "title": "Where Heritage Meets Artistry",
@@ -31,6 +31,14 @@
       "specs": "18K White Gold • Ceylon Sapphire • Diamond Halo",
       "imageUrl": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=300&fit=crop",
       "category": "Signature"
+    },
+    {
+      "id": "1769024462655",
+      "name": "test",
+      "description": "adfsdaf",
+      "specs": "asdf",
+      "imageUrl": "http://localhost:5000/uploads/file-1769024456816-585581805.jpg",
+      "category": "Diamonds"
     }
   ],
   "collections": [
