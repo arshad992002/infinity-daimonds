@@ -4,11 +4,24 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "node server/index.js",
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
+    "build": "cd client && npm run build",
     "install:all": "npm install && cd server && npm install && cd client && npm install"
   },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "lowdb": "^7.0.1",
+    "multer": "^2.0.2"
+  },
   "devDependencies": {
-    "concurrently": "^8.2.2"
-  }
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.11"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ]
 }

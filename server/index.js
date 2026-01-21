@@ -41,6 +41,13 @@ app.use(express.json());
 // Serve static files from uploads directory
 app.use('/uploads', express.static(uploadDir));
 
+// Serve static frontend files
+const distDir = join(__dirname, '../client/dist');
+if (fs.existsSync(distDir)) {
+  app.use(express.static(distDir));
+}
+
+
 // --- File Upload Route ---
 app.post('/api/upload', (req, res) => {
   upload.single('file')(req, res, (err) => {
@@ -178,12 +185,22 @@ app.get('/api/messages', async (req, res) => {
   res.json(db.data.messages);
 });
 
-// --- 404 Handler ---
-app.use((req, res) => {
-  res.status(404).json({ error: "Not Found", message: `Route ${req.url} not found` });
+// --- 404 Handler for API ---
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: "Not Found", message: `API route ${req.url} not found` });
 });
 
-const PORT = 5000;
+// --- Catch-All for Frontend (SPA) ---
+app.get(/(.*)/, (req, res) => {
+  const distDir = join(__dirname, '../client/dist');
+  if (fs.existsSync(join(distDir, 'index.html'))) {
+    res.sendFile(join(distDir, 'index.html'));
+  } else {
+    res.status(404).send("Client build not found. Please run 'npm run build' in client directory.");
+  }
+});
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
