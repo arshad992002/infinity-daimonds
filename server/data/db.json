@@ -40,6 +40,9 @@
       "description": "A masterpiece featuring a flawless 5-carat diamond set in platinum.",
       "specs": "Platinum • 5.0ct Diamond • VVS1 Clarity",
       "imageUrl": "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=400&h=300&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=400&h=300&fit=crop"
+      ],
       "category": "Signature"
     },
     {
@@ -48,6 +51,9 @@
       "description": "An exquisite pendant featuring rare Ceylon sapphires surrounded by brilliant diamonds.",
       "specs": "18K White Gold • Ceylon Sapphire • Diamond Halo",
       "imageUrl": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=300&fit=crop",
+      "images": [
+        "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=300&fit=crop"
+      ],
       "category": "Signature"
     },
     {
@@ -56,6 +62,9 @@
       "description": "adfsdaf",
       "specs": "asdf",
       "imageUrl": "http://localhost:5000/uploads/file-1769024456816-585581805.jpg",
+      "images": [
+        "http://localhost:5000/uploads/file-1769024456816-585581805.jpg"
+      ],
       "category": "Diamonds"
     }
   ],

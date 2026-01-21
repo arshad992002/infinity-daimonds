@@ -274,11 +274,30 @@ const ProductsManager = () => {
                             </select>
                         </div>
                         <div className="form-group">
-                            <label>Image URL</label>
-                            <input value={newItem.imageUrl} onChange={e => setNewItem({ ...newItem, imageUrl: e.target.value })} required />
-                            <div style={{ marginTop: '10px' }}>
-                                <FileUpload label="Or Upload Image" onUpload={(url) => setNewItem(prev => ({ ...prev, imageUrl: url }))} />
-                            </div>
+                            <label>Product Images (Upload up to 3)</label>
+
+                            {/* Helper to update specific image index */}
+                            {[0, 1, 2].map(idx => (
+                                <div key={idx} style={{ marginBottom: '10px', padding: '10px', background: '#f9f9f9', borderRadius: '4px' }}>
+                                    <label style={{ fontSize: '0.8rem' }}>Image {idx + 1}</label>
+                                    <input
+                                        value={newItem.images?.[idx] || ''}
+                                        onChange={e => {
+                                            const newImages = [...(newItem.images || [])];
+                                            newImages[idx] = e.target.value;
+                                            setNewItem({ ...newItem, images: newImages, imageUrl: newImages[0] }); // Keep legacy imageUrl updated with 1st image
+                                        }}
+                                        placeholder="Image URL"
+                                    />
+                                    <div style={{ marginTop: '5px' }}>
+                                        <FileUpload label={`Upload Image ${idx + 1}`} onUpload={(url) => {
+                                            const newImages = [...(newItem.images || [])];
+                                            newImages[idx] = url;
+                                            setNewItem({ ...newItem, images: newImages, imageUrl: newImages[0] });
+                                        }} />
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                         <div className="form-group">
                             <label>Description</label>
@@ -308,6 +327,110 @@ const ProductsManager = () => {
                                 <div style={{ display: 'flex', gap: '5px' }}>
                                     <button onClick={() => handleEdit(p)} className="save-btn" style={{ padding: '0.5rem', fontSize: '0.8rem' }}>Edit</button>
                                     <button onClick={() => handleDelete(p.id)} className="delete-btn">Delete</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
+
+const CollectionsManager = () => {
+    const [collections, setCollections] = useState([]);
+    const [newItem, setNewItem] = useState({ name: '', tagline: '', imageUrl: '' });
+    const [editingId, setEditingId] = useState(null);
+
+    useEffect(() => {
+        loadCollections();
+    }, []);
+
+    const loadCollections = () => api.get('/collections').then(res => setCollections(res.data));
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            if (editingId) {
+                await api.put(`/collections/${editingId}`, newItem);
+                setEditingId(null);
+            } else {
+                await api.post('/collections', newItem);
+            }
+            setNewItem({ name: '', tagline: '', imageUrl: '' });
+            loadCollections();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleEdit = (col) => {
+        setNewItem(col);
+        setEditingId(col.id);
+    };
+
+    const handleCancel = () => {
+        setNewItem({ name: '', tagline: '', imageUrl: '' });
+        setEditingId(null);
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure?')) {
+            await api.delete(`/collections/${id}`);
+            loadCollections();
+        }
+    };
+
+    return (
+        <div className="admin-section">
+            <div className="section-header">
+                <h2>Collections Manager</h2>
+                <button onClick={handleCancel} className="save-btn" style={{ background: '#4CAF50', color: 'white' }}>
+                    + Add New Collection
+                </button>
+            </div>
+
+            <div className="admin-grid">
+                <div className="add-product-form">
+                    <h3>{editingId ? 'Edit Collection' : 'Add New Collection'}</h3>
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label>Name</label>
+                            <input value={newItem.name} onChange={e => setNewItem({ ...newItem, name: e.target.value })} required />
+                        </div>
+                        <div className="form-group">
+                            <label>Tagline</label>
+                            <input value={newItem.tagline} onChange={e => setNewItem({ ...newItem, tagline: e.target.value })} required />
+                        </div>
+                        <div className="form-group">
+                            <label>Cover Image</label>
+                            <input value={newItem.imageUrl} onChange={e => setNewItem({ ...newItem, imageUrl: e.target.value })} required />
+                            <div style={{ marginTop: '10px' }}>
+                                <FileUpload label="Or Upload Image" onUpload={(url) => setNewItem(prev => ({ ...prev, imageUrl: url }))} />
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button type="submit" className="save-btn">{editingId ? 'Update' : 'Add'}</button>
+                            {editingId && <button type="button" onClick={handleCancel} className="delete-btn" style={{ background: '#666' }}>Cancel</button>}
+                        </div>
+                    </form>
+                </div>
+
+                <div className="product-list">
+                    <h3>Existing Collections</h3>
+                    <div className="list-container">
+                        {collections.map(c => (
+                            <div key={c.id} className="list-item">
+                                <img src={c.imageUrl} alt={c.name} className="item-thumb" />
+                                <div className="item-details">
+                                    <h4>{c.name}</h4>
+                                    <span className="badge">{c.tagline}</span>
+                                </div>
+                                <div style={{ display: 'flex', gap: '5px' }}>
+                                    <button onClick={() => handleEdit(c)} className="save-btn" style={{ padding: '0.5rem', fontSize: '0.8rem' }}>Edit</button>
+                                    <button onClick={() => handleDelete(c.id)} className="delete-btn">Delete</button>
                                 </div>
                             </div>
                         ))}
@@ -358,6 +481,7 @@ const Admin = () => {
                 <ul>
                     <li className={activeTab === 'dashboard' ? 'active' : ''} onClick={() => setActiveTab('dashboard')}>Dashboard</li>
                     <li className={activeTab === 'content' ? 'active' : ''} onClick={() => setActiveTab('content')}>Content</li>
+                    <li className={activeTab === 'collections' ? 'active' : ''} onClick={() => setActiveTab('collections')}>Collections</li>
                     <li className={activeTab === 'products' ? 'active' : ''} onClick={() => setActiveTab('products')}>Products</li>
                     <li className={activeTab === 'inbox' ? 'active' : ''} onClick={() => setActiveTab('inbox')}>Inbox</li>
                     <li className="logout" onClick={() => setIsAuthenticated(false)}>Logout</li>
@@ -366,6 +490,7 @@ const Admin = () => {
             <main className="admin-main">
                 {activeTab === 'dashboard' && <Dashboard />}
                 {activeTab === 'content' && <ContentManager />}
+                {activeTab === 'collections' && <CollectionsManager />}
                 {activeTab === 'products' && <ProductsManager />}
                 {activeTab === 'inbox' && <Inbox />}
             </main>

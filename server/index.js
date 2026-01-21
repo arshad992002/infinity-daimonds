@@ -136,6 +136,33 @@ app.get('/api/collections', async (req, res) => {
   res.json(db.data.collections);
 });
 
+app.post('/api/collections', async (req, res) => {
+  await db.read();
+  const newCollection = { id: Date.now().toString(), ...req.body };
+  db.data.collections.push(newCollection);
+  await db.write();
+  res.json(newCollection);
+});
+
+app.put('/api/collections/:id', async (req, res) => {
+  await db.read();
+  const { id } = req.params;
+  const index = db.data.collections.findIndex(c => c.id === id);
+  if (index === -1) return res.status(404).json({ error: 'Collection not found' });
+
+  db.data.collections[index] = { ...db.data.collections[index], ...req.body, id };
+  await db.write();
+  res.json(db.data.collections[index]);
+});
+
+app.delete('/api/collections/:id', async (req, res) => {
+  await db.read();
+  const { id } = req.params;
+  db.data.collections = db.data.collections.filter(c => c.id !== id);
+  await db.write();
+  res.json({ success: true });
+});
+
 // --- Contact/Message Routes ---
 app.post('/api/messages', async (req, res) => {
   await db.read();

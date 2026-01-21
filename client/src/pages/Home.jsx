@@ -3,11 +3,53 @@ import { Link } from 'react-router-dom';
 import api from '../api';
 import './Home.css';
 
+// Product Popup Component
+const ProductModal = ({ product, onClose }) => {
+    const [activeImage, setActiveImage] = useState(0);
+    const images = product.images || [product.imageUrl];
+
+    if (!product) return null;
+
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <button className="close-btn" onClick={onClose}>&times;</button>
+                <div className="modal-grid">
+                    <div className="modal-gallery">
+                        <img src={images[activeImage]} alt={product.name} className="main-image" />
+                        {images.length > 1 && (
+                            <div className="thumbnail-row">
+                                {images.map((img, idx) => (
+                                    <img
+                                        key={idx}
+                                        src={img}
+                                        className={`thumb ${activeImage === idx ? 'active' : ''}`}
+                                        onClick={() => setActiveImage(idx)}
+                                        alt={`View ${idx + 1}`}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    <div className="modal-details">
+                        <h3>{product.name}</h3>
+                        <p className="modal-category">{product.category}</p>
+                        <p className="modal-desc">{product.description}</p>
+                        <p className="modal-specs"><strong>Specs:</strong> {product.specs}</p>
+                        <button className="inquire-btn">Inquire About This Piece</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const Home = () => {
     const [content, setContent] = useState(null);
     const [collections, setCollections] = useState([]);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     const [error, setError] = useState(null);
 
@@ -24,8 +66,8 @@ const Home = () => {
 
             setContent(contentRes.data);
             setCollections(collecRes.data || []);
-            // Filter specifically for "Signature" pieces or just take first 3
-            const sigs = prodRes.data.filter(p => p.category === 'Signature').slice(0, 3);
+            // Filter specifically for "Signature" pieces
+            const sigs = prodRes.data.filter(p => p.category === 'Signature');
             setProducts(sigs.length > 0 ? sigs : prodRes.data.slice(0, 3));
             setLoading(false);
         } catch (err) {
@@ -40,23 +82,12 @@ const Home = () => {
     }, []);
 
     if (loading) return <div className="loading-screen">Loading Maison Lumière...</div>;
-    if (error) return (
-        <div className="error-container" style={{ padding: '100px', textAlign: 'center' }}>
-            <h2>Error Loading Content</h2>
-            <p>{error}</p>
-            <button onClick={fetchData} style={{ marginTop: '20px', padding: '10px 20px', cursor: 'pointer' }}>Retry</button>
-        </div>
-    );
     if (!content) return <div>Error loading content.</div>;
-
-    // Helper to format newlines
-    const renderTitle = (title) => {
-        // Simple replace for <br> if needed, logic borrowed from original HTML structure
-        return { __html: title.replace('\n', '<br>') };
-    };
 
     return (
         <div className="home">
+            {selectedProduct && <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />}
+
             {/* Hero Section */}
             <section className="hero" id="home">
                 <video className="hero-video" autoPlay muted loop playsInline>
@@ -89,13 +120,13 @@ const Home = () => {
                 <h2 className="section-title">Our Collections</h2>
                 <div className="collections-grid">
                     {collections.map(col => (
-                        <Link to={`/products?cat=${col.id}`} key={col.id} className="collection-card">
+                        <div key={col.id} className="collection-card">
                             <img src={col.imageUrl} alt={col.name} />
                             <div className="collection-overlay">
                                 <h3>{col.name}</h3>
                                 <p>{col.tagline}</p>
                             </div>
-                        </Link>
+                        </div>
                     ))}
                 </div>
             </section>
@@ -105,7 +136,7 @@ const Home = () => {
                 <h2 className="section-title">Signature Pieces</h2>
                 <div className="signature-grid">
                     {products.map(product => (
-                        <div className="signature-piece" key={product.id}>
+                        <div className="signature-piece" key={product.id} onClick={() => setSelectedProduct(product)} style={{ cursor: 'pointer' }}>
                             <img src={product.imageUrl} alt={product.name} />
                             <div className="signature-info">
                                 <h4>{product.name}</h4>
