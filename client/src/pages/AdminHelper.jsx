@@ -48,15 +48,17 @@ const FileUpload = ({ onUpload, label }) => {
         formData.append('file', file);
 
         try {
+            console.log('Uploading file...');
             const res = await api.post('/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
+            console.log('Upload success:', res.data);
             onUpload(res.data.url);
             setUploading(false);
         } catch (err) {
-            console.error('Upload failed', err);
+            console.error('Upload failed details:', err.response?.data || err.message);
             setUploading(false);
-            alert('Upload failed. Please try again.');
+            alert('Upload failed. Check console for details.');
         }
     };
 
@@ -163,7 +165,7 @@ const ContentManager = () => {
 const ProductsManager = () => {
     const [products, setProducts] = useState([]);
     const [newItem, setNewItem] = useState({ name: '', description: '', specs: '', imageUrl: '', category: 'Signature' });
-    const [status, setStatus] = useState('');
+    const [editingId, setEditingId] = useState(null);
 
     useEffect(() => {
         loadProducts();
@@ -171,15 +173,30 @@ const ProductsManager = () => {
 
     const loadProducts = () => api.get('/products').then(res => setProducts(res.data));
 
-    const handleAdd = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await api.post('/products', newItem);
+            if (editingId) {
+                await api.put(`/products/${editingId}`, newItem);
+                setEditingId(null);
+            } else {
+                await api.post('/products', newItem);
+            }
             setNewItem({ name: '', description: '', specs: '', imageUrl: '', category: 'Signature' });
             loadProducts();
         } catch (err) {
             console.error(err);
         }
+    };
+
+    const handleEdit = (product) => {
+        setNewItem(product);
+        setEditingId(product.id);
+    };
+
+    const handleCancel = () => {
+        setNewItem({ name: '', description: '', specs: '', imageUrl: '', category: 'Signature' });
+        setEditingId(null);
     };
 
     const handleDelete = async (id) => {
@@ -195,8 +212,8 @@ const ProductsManager = () => {
 
             <div className="admin-grid">
                 <div className="add-product-form">
-                    <h3>Add New Product</h3>
-                    <form onSubmit={handleAdd}>
+                    <h3>{editingId ? 'Edit Product' : 'Add New Product'}</h3>
+                    <form onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label>Name</label>
                             <input value={newItem.name} onChange={e => setNewItem({ ...newItem, name: e.target.value })} required />
@@ -224,7 +241,10 @@ const ProductsManager = () => {
                             <label>Specs</label>
                             <input value={newItem.specs} onChange={e => setNewItem({ ...newItem, specs: e.target.value })} required />
                         </div>
-                        <button type="submit" className="save-btn">Add Product</button>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button type="submit" className="save-btn">{editingId ? 'Update Product' : 'Add Product'}</button>
+                            {editingId && <button type="button" onClick={handleCancel} className="delete-btn" style={{ background: '#666' }}>Cancel</button>}
+                        </div>
                     </form>
                 </div>
 
@@ -238,7 +258,10 @@ const ProductsManager = () => {
                                     <h4>{p.name}</h4>
                                     <span className="badge">{p.category}</span>
                                 </div>
-                                <button onClick={() => handleDelete(p.id)} className="delete-btn">Delete</button>
+                                <div style={{ display: 'flex', gap: '5px' }}>
+                                    <button onClick={() => handleEdit(p)} className="save-btn" style={{ padding: '0.5rem', fontSize: '0.8rem' }}>Edit</button>
+                                    <button onClick={() => handleDelete(p.id)} className="delete-btn">Delete</button>
+                                </div>
                             </div>
                         ))}
                     </div>

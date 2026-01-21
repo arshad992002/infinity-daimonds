@@ -42,13 +42,21 @@ app.use(express.json());
 app.use('/uploads', express.static(uploadDir));
 
 // --- File Upload Route ---
-app.post('/api/upload', upload.single('file'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No file uploaded' });
-  }
-  // Return the URL to access the file
-  const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
-  res.json({ url: fileUrl });
+app.post('/api/upload', (req, res) => {
+  upload.single('file')(req, res, (err) => {
+    if (err) {
+      console.error("Upload Error:", err);
+      return res.status(500).json({ error: err.message });
+    }
+    if (!req.file) {
+      console.error("No file received");
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    // Return the URL to access the file
+    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    console.log("File uploaded successfully:", fileUrl);
+    res.json({ url: fileUrl });
+  });
 });
 
 // Request logging middleware
@@ -97,6 +105,21 @@ app.post('/api/products', async (req, res) => {
   res.json(newProduct);
 });
 
+app.put('/api/products/:id', async (req, res) => {
+  await db.read();
+  const { id } = req.params;
+  const index = db.data.products.findIndex(p => p.id === id);
+
+  if (index === -1) {
+    return res.status(404).json({ error: 'Product not found' });
+  }
+
+  // Update product preserving ID
+  db.data.products[index] = { ...db.data.products[index], ...req.body, id };
+  await db.write();
+  res.json(db.data.products[index]);
+});
+
 app.delete('/api/products/:id', async (req, res) => {
   await db.read();
   const { id } = req.params;
@@ -104,6 +127,8 @@ app.delete('/api/products/:id', async (req, res) => {
   await db.write();
   res.json({ success: true });
 });
+
+
 
 // --- Collection Routes ---
 app.get('/api/collections', async (req, res) => {

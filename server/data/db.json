@@ -3,7 +3,7 @@
     "hero": {
       "title": "TIMELESS ELEGAhiNCEsdf",
       "subtitle": "Exquisite Jewelry Since 2018123",
-      "videoUrl": "/5106444-hd_1920_1080_25fps.mp4"
+      "videoUrl": ""
     },
     "about": {
       "title": "Where Heritage Meets Artistry",
@@ -30,14 +30,6 @@
       "description": "An exquisite pendant featuring rare Ceylon sapphires surrounded by brilliant diamonds.",
       "specs": "18K White Gold • Ceylon Sapphire • Diamond Halo",
       "imageUrl": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=300&fit=crop",
-      "category": "Signature"
-    },
-    {
-      "id": "3",
-      "name": "Eternal Elegance",
-      "description": "Hand-crafted bracelet combining emeralds and diamonds in a timeless design.",
-      "specs": "18K Yellow Gold • Colombian Emeralds • Diamonds",
-      "imageUrl": "https://images.unsplash.com/photo-1612696684355-e8005dfbb7ed?w=400&h=300&fit=crop",
       "category": "Signature"
     }
   ],
