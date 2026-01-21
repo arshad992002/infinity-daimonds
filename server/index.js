@@ -42,7 +42,7 @@ app.use(express.json());
 app.use('/uploads', express.static(uploadDir));
 
 // Serve static frontend files
-const distDir = join(__dirname, '../dist'); // Updated path
+const distDir = join(__dirname, '../build'); // Updated path
 console.log('Checking for client build at:', distDir);
 
 if (fs.existsSync(distDir)) {
@@ -207,7 +207,7 @@ app.use('/api', (req, res) => {
 // This must be the LAST route. It handles any request not caught by API or Static files.
 app.use((req, res) => {
   console.log(`Catch-all hit for: ${req.url}`);
-  const distDir = join(__dirname, '../dist');
+  const distDir = join(__dirname, '../build');
 
   if (fs.existsSync(join(distDir, 'index.html'))) {
     console.log(`Sending index.html from: ${distDir}`);

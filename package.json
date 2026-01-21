@@ -1,6 +1,7 @@
 {
   "name": "dynamic-jewelry-site",
   "version": "1.0.0",
+  "main": "server/index.js",
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
