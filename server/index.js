@@ -43,8 +43,21 @@ app.use('/uploads', express.static(uploadDir));
 
 // Serve static frontend files
 const distDir = join(__dirname, '../client/dist');
+console.log('Checking for client build at:', distDir);
+
 if (fs.existsSync(distDir)) {
+  console.log('Client build found. Serving static files.');
+  console.log('Files in dist:', fs.readdirSync(distDir));
   app.use(express.static(distDir));
+} else {
+  console.error('Client build NOT found at:', distDir);
+  // List parent directory to see what structure looks like
+  try {
+    const parentDir = join(__dirname, '../client');
+    console.log('Contents of ../client:', fs.readdirSync(parentDir));
+  } catch (e) {
+    console.log('Could not list ../client:', e.message);
+  }
 }
 
 
@@ -196,7 +209,13 @@ app.get(/(.*)/, (req, res) => {
   if (fs.existsSync(join(distDir, 'index.html'))) {
     res.sendFile(join(distDir, 'index.html'));
   } else {
-    res.status(404).send("Client build not found. Please run 'npm run build' in client directory.");
+    // Debugging info for the user
+    res.status(404).send(`
+      <h1>Client Build Not Found</h1>
+      <p>Looked for index.html at: <code>${distDir}</code></p>
+      <p>Error: The 'dist' directory does not exist or is empty.</p>
+      <p>Please check the server logs for more file system details.</p>
+    `);
   }
 });
 
