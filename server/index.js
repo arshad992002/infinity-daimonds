@@ -204,8 +204,11 @@ app.use('/api', (req, res) => {
 });
 
 // --- Catch-All for Frontend (SPA) ---
-app.get(/(.*)/, (req, res) => {
+// This must be the LAST route. It handles any request not caught by API or Static files.
+app.use((req, res) => {
+  console.log(`Catch-all hit for: ${req.url}`);
   const distDir = join(__dirname, '../client/dist');
+
   if (fs.existsSync(join(distDir, 'index.html'))) {
     res.sendFile(join(distDir, 'index.html'));
   } else {
