@@ -3,9 +3,33 @@ import cors from 'cors';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { JSONFilePreset } from 'lowdb/node';
+import multer from 'multer';
+import fs from 'fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const file = join(__dirname, 'data', 'db.json');
+
+// Ensure uploads directory exists
+const uploadDir = join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
+// Configure Multer
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir)
+  },
+  filename: function (req, file, cb) {
+    // Create unique filename
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    // Keep original extension
+    const ext = file.originalname.split('.').pop();
+    cb(null, file.fieldname + '-' + uniqueSuffix + '.' + ext)
+  }
+});
+
+const upload = multer({ storage: storage });
 
 // Initialize LowDB with default data
 const defaultData = { content: {}, products: [], collections: [], gallery: [], messages: [] };
@@ -14,6 +38,18 @@ const db = await JSONFilePreset(file, defaultData);
 const app = express();
 app.use(cors());
 app.use(express.json());
+// Serve static files from uploads directory
+app.use('/uploads', express.static(uploadDir));
+
+// --- File Upload Route ---
+app.post('/api/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+  // Return the URL to access the file
+  const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+  res.json({ url: fileUrl });
+});
 
 // Request logging middleware
 app.use((req, res, next) => {

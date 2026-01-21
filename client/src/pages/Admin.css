@@ -35,9 +35,9 @@
 
 .admin-layout {
     display: flex;
-    min-height: calc(100vh - 80px);
+    min-height: calc(100vh - 120px);
     /* Adjust for navbar if visible, or full height */
-    padding-top: 80px;
+    padding-top: 120px;
     /* Offset fixed navbar */
 }
 
@@ -116,12 +116,15 @@
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
     width: 100%;
     padding: 0.8rem;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-family: inherit;
+    color: #333; /* Make text dark for readability */
+    background-color: #fff;
 }
 
 .admin-stats {

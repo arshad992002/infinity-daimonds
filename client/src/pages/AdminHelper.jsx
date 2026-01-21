@@ -35,6 +35,40 @@ const Login = ({ onLogin }) => {
     );
 };
 
+// File Upload Component
+const FileUpload = ({ onUpload, label }) => {
+    const [uploading, setUploading] = useState(false);
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await api.post('/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            onUpload(res.data.url);
+            setUploading(false);
+        } catch (err) {
+            console.error('Upload failed', err);
+            setUploading(false);
+            alert('Upload failed. Please try again.');
+        }
+    };
+
+    return (
+        <div className="form-group">
+            <label>{label}</label>
+            <input type="file" onChange={handleFileChange} disabled={uploading} />
+            {uploading && <p style={{ fontSize: '0.8rem', color: '#666' }}>Uploading...</p>}
+        </div>
+    );
+};
+
 const Dashboard = () => {
     // Stats placeholder
     return (
@@ -112,10 +146,14 @@ const ContentManager = () => {
                 </div>
                 <div className="form-group">
                     <label>Video URL</label>
-                    <input
-                        value={content.hero.videoUrl}
-                        onChange={e => handleChange('hero', 'videoUrl', e.target.value)}
-                    />
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                        <input
+                            value={content.hero.videoUrl}
+                            onChange={e => handleChange('hero', 'videoUrl', e.target.value)}
+                            placeholder="Or enter URL manually"
+                        />
+                    </div>
+                    <FileUpload label="Upload Header Video" onUpload={(url) => handleChange('hero', 'videoUrl', url)} />
                 </div>
             </div>
         </div>
@@ -174,6 +212,9 @@ const ProductsManager = () => {
                         <div className="form-group">
                             <label>Image URL</label>
                             <input value={newItem.imageUrl} onChange={e => setNewItem({ ...newItem, imageUrl: e.target.value })} required />
+                            <div style={{ marginTop: '10px' }}>
+                                <FileUpload label="Or Upload Image" onUpload={(url) => setNewItem(prev => ({ ...prev, imageUrl: url }))} />
+                            </div>
                         </div>
                         <div className="form-group">
                             <label>Description</label>
