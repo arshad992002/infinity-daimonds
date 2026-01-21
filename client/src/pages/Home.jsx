@@ -120,22 +120,16 @@ const Home = () => {
             {/* Craftsmanship Section */}
             <section className="craftsmanship" id="craftsmanship">
                 <div className="craftsmanship-content">
-                    <h2>The Art of Perfection</h2>
-                    <p>Every Maison Lumière piece begins with a sketch and ends with a masterpiece. Our artisans dedicate hundreds of hours to ensuring every facet reflects our commitment to excellence.</p>
+                    <h2>{content.craftsmanship?.title || "The Art of Perfection"}</h2>
+                    <p>{content.craftsmanship?.text || "Every Maison Lumière piece begins with a sketch and ends with a masterpiece."}</p>
 
                     <div className="stats">
-                        <div className="stat">
-                            <div className="stat-number">100+</div>
-                            <div className="stat-label">Years of Heritage</div>
-                        </div>
-                        <div className="stat">
-                            <div className="stat-number">50</div>
-                            <div className="stat-label">Master Artisans</div>
-                        </div>
-                        <div className="stat">
-                            <div className="stat-number">∞</div>
-                            <div className="stat-label">Infinite Beauty</div>
-                        </div>
+                        {content.craftsmanship?.stats.map((stat, index) => (
+                            <div className="stat" key={index}>
+                                <div className="stat-number">{stat.number}</div>
+                                <div className="stat-label">{stat.label}</div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>

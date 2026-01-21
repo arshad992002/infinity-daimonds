@@ -157,6 +157,48 @@ const ContentManager = () => {
                     </div>
                     <FileUpload label="Upload Header Video" onUpload={(url) => handleChange('hero', 'videoUrl', url)} />
                 </div>
+
+                <h3>Craftsmanship</h3>
+                <div className="form-group">
+                    <label>Title</label>
+                    <input
+                        value={content.craftsmanship?.title || ''}
+                        onChange={e => handleChange('craftsmanship', 'title', e.target.value)}
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Text</label>
+                    <textarea
+                        value={content.craftsmanship?.text || ''}
+                        onChange={e => handleChange('craftsmanship', 'text', e.target.value)}
+                        rows="4"
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Stats</label>
+                    {content.craftsmanship?.stats.map((stat, index) => (
+                        <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                            <input
+                                placeholder="Number"
+                                value={stat.number}
+                                onChange={e => {
+                                    const newStats = [...content.craftsmanship.stats];
+                                    newStats[index].number = e.target.value;
+                                    handleChange('craftsmanship', 'stats', newStats);
+                                }}
+                            />
+                            <input
+                                placeholder="Label"
+                                value={stat.label}
+                                onChange={e => {
+                                    const newStats = [...content.craftsmanship.stats];
+                                    newStats[index].label = e.target.value;
+                                    handleChange('craftsmanship', 'stats', newStats);
+                                }}
+                            />
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
