@@ -3,7 +3,7 @@
     "hero": {
       "title": "TIMELESS ELEGANCE",
       "subtitle": "Exquisite Jewelry Since 2018",
-      "videoUrl": "http://localhost:5000/uploads/file-1769024412211-512379592.mp4"
+      "videoUrl": "/uploads/file-1769024412211-512379592.mp4"
     },
     "about": {
       "title": "Where Heritage Meets Artistry",
@@ -61,9 +61,9 @@
       "name": "test",
       "description": "adfsdaf",
       "specs": "asdf",
-      "imageUrl": "http://localhost:5000/uploads/file-1769024456816-585581805.jpg",
+      "imageUrl": "/uploads/file-1769024456816-585581805.jpg",
       "images": [
-        "http://localhost:5000/uploads/file-1769024456816-585581805.jpg"
+        "/uploads/file-1769024456816-585581805.jpg"
       ],
       "category": "Diamonds"
     }
