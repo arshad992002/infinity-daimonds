@@ -3,4 +3,5 @@ node_modules
 .env
 dist
 build
+client
 .DS_Store
